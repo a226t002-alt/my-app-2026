@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CampusSync - Campus Life Organizer</title>
-    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -28,7 +27,7 @@
             }
         }
     </script>
-    <!-- Import Map for ESM -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <script type="importmap">
     {
       "imports": {
@@ -46,7 +45,7 @@
 <body>
     <div id="root"></div>
 
-    <script type="module">
+    <script type="text/babel" data-type="module">
         import React, { useState, useEffect } from 'react';
         import { createRoot } from 'react-dom/client';
         import { 
@@ -468,7 +467,7 @@
                                                     type="text"
                                                     value={newLinkTitle}
                                                     onChange={(e) => setNewLinkTitle(e.target.value)}
-                                                    placeholder="e.g. University Portal"
+                                                    placeholder="e.g. Portal"
                                                     className="w-full px-4 py-3 bg-white/50 border border-slate-200 rounded-2xl focus:ring-4 focus:ring-indigo-100 focus:border-indigo-500 outline-none transition-all text-sm font-medium"
                                                     required
                                                 />
@@ -476,121 +475,88 @@
                                             <div>
                                                 <label className="block text-xs font-black text-slate-400 uppercase tracking-widest mb-2 px-1">URL</label>
                                                 <input
-                                                    type="url"
+                                                    type="text"
                                                     value={newLinkUrl}
                                                     onChange={(e) => setNewLinkUrl(e.target.value)}
-                                                    placeholder="https://..."
+                                                    placeholder="e.g. example.com"
                                                     className="w-full px-4 py-3 bg-white/50 border border-slate-200 rounded-2xl focus:ring-4 focus:ring-indigo-100 focus:border-indigo-500 outline-none transition-all text-sm font-medium"
                                                     required
                                                 />
                                             </div>
                                             <button type="submit" className="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-3.5 rounded-2xl text-sm font-bold shadow-lg shadow-indigo-200 transition-all flex items-center justify-center gap-2 active:scale-95">
-                                                Save Link
+                                                Add Link
                                             </button>
                                         </form>
                                     </div>
                                 </div>
-                                
                                 <div className="lg:col-span-8">
                                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                        {links.length === 0 ? (
-                                            <div className="col-span-full p-12 bg-white/40 border-2 border-dashed border-slate-200 rounded-3xl text-center text-slate-400 font-bold italic">
-                                                No links yet.
+                                        {links.map(link => (
+                                            <div key={link.id} className="group bg-white/70 backdrop-blur-sm p-6 rounded-3xl border border-white/60 shadow-lg hover:shadow-xl transition-all hover:scale-[1.02] flex items-center justify-between">
+                                                <a href={link.url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 text-sm font-bold text-slate-700 hover:text-indigo-600 transition-colors">
+                                                    <ExternalLink className="w-4 h-4 text-slate-400" />
+                                                    {link.title}
+                                                </a>
+                                                <button 
+                                                    onClick={() => deleteLink(link.id)}
+                                                    className="w-8 h-8 flex items-center justify-center rounded-full text-slate-300 hover:text-red-500 hover:bg-red-50 transition-all opacity-0 group-hover:opacity-100"
+                                                >
+                                                    <Trash2 className="w-3.5 h-3.5" />
+                                                </button>
                                             </div>
-                                        ) : (
-                                            links.map(link => (
-                                                <div key={link.id} className="group relative bg-white/70 backdrop-blur-sm rounded-3xl border border-white/60 shadow-lg hover:shadow-xl transition-all hover:scale-[1.02] flex items-center p-5 overflow-hidden">
-                                                    <a 
-                                                        href={link.url} 
-                                                        target="_blank" 
-                                                        rel="noopener noreferrer"
-                                                        className="flex-1 flex items-center gap-4 min-w-0"
-                                                    >
-                                                        <div className="w-12 h-12 bg-indigo-50 rounded-2xl flex items-center justify-center text-indigo-500 group-hover:bg-indigo-500 group-hover:text-white transition-all duration-300">
-                                                            <ExternalLink className="w-6 h-6" />
-                                                        </div>
-                                                        <div className="flex-1 min-w-0">
-                                                            <h4 className="font-black text-slate-800 text-sm truncate">{link.title}</h4>
-                                                            <p className="text-[10px] font-bold text-slate-400 truncate mt-0.5">{link.url}</p>
-                                                        </div>
-                                                    </a>
-                                                    <button 
-                                                        onClick={(e) => { e.preventDefault(); deleteLink(link.id); }}
-                                                        className="w-10 h-10 flex items-center justify-center rounded-full text-slate-300 hover:text-red-500 hover:bg-red-50 transition-all opacity-0 group-hover:opacity-100 ml-2"
-                                                    >
-                                                        <Trash2 className="w-4 h-4" />
-                                                    </button>
-                                                </div>
-                                            ))
-                                        )}
+                                        ))}
                                     </div>
                                 </div>
                             </div>
                         )}
                     </main>
 
-                    {/* --- Class Edit Modal --- */}
-                    {isClassModalOpen && selectedCell && (
-                        <div className="fixed inset-0 z-50 flex items-center justify-center p-6">
-                            <div className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm animate-in fade-in" onClick={() => setIsClassModalOpen(false)} />
-                            <div className="relative bg-white/90 backdrop-blur-xl rounded-[40px] shadow-2xl w-full max-w-md border border-white/60 overflow-hidden animate-zoom-in">
-                                <div className="p-8 border-b border-slate-100 flex items-center justify-between">
-                                    <div>
-                                        <h3 className="text-xl font-black text-slate-800 tracking-tight">Edit Class</h3>
-                                        <p className="text-xs font-black text-indigo-500 mt-1 uppercase tracking-widest">
-                                            {days[selectedCell.dayIndex]}曜 {periods[selectedCell.periodIndex]}
-                                        </p>
-                                    </div>
-                                    <button onClick={() => setIsClassModalOpen(false)} className="w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center text-slate-400 hover:text-slate-600 transition-colors">
+                    {/* --- Class Modal (時間割編集用のポップアップ) --- */}
+                    {isClassModalOpen && (
+                        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm animate-in">
+                            <div className="bg-white rounded-3xl shadow-xl border border-slate-100 w-full max-w-md overflow-hidden animate-zoom-in">
+                                <div className="p-6 border-b border-slate-50 flex items-center justify-between">
+                                    <h3 className="text-lg font-black text-slate-800">講義情報の編集</h3>
+                                    <button onClick={() => setIsClassModalOpen(false)} className="text-slate-400 hover:text-slate-600">
                                         <X className="w-5 h-5" />
                                     </button>
                                 </div>
-                                <div className="p-8 space-y-6">
+                                <div className="p-6 space-y-4">
                                     <div>
-                                        <label className="block text-xs font-black text-slate-400 uppercase tracking-widest mb-2 px-1">Course Name</label>
+                                        <label className="block text-xs font-black text-slate-400 uppercase tracking-widest mb-2">講義名</label>
                                         <input
                                             type="text"
                                             value={classForm.name}
-                                            onChange={(e) => setClassForm({...classForm, name: e.target.value})}
-                                            className="w-full px-5 py-3 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-4 focus:ring-indigo-100 focus:border-indigo-500 outline-none transition-all text-sm font-bold"
-                                            autoFocus
+                                            onChange={(e) => setClassForm({ ...classForm, name: e.target.value })}
+                                            className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-4 focus:ring-indigo-100 focus:border-indigo-500 outline-none transition-all text-sm font-medium"
                                         />
                                     </div>
-                                    <div className="grid grid-cols-2 gap-4">
-                                        <div>
-                                            <label className="block text-xs font-black text-slate-400 uppercase tracking-widest mb-2 px-1">Room</label>
-                                            <input
-                                                type="text"
-                                                value={classForm.room}
-                                                onChange={(e) => setClassForm({...classForm, room: e.target.value})}
-                                                className="w-full px-5 py-3 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-4 focus:ring-indigo-100 focus:border-indigo-500 outline-none transition-all text-sm font-bold"
-                                            />
-                                        </div>
-                                        <div>
-                                            <label className="block text-xs font-black text-slate-400 uppercase tracking-widest mb-2 px-1">Professor</label>
-                                            <input
-                                                type="text"
-                                                value={classForm.teacher}
-                                                onChange={(e) => setClassForm({...classForm, teacher: e.target.value})}
-                                                className="w-full px-5 py-3 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-4 focus:ring-indigo-100 focus:border-indigo-500 outline-none transition-all text-sm font-bold"
-                                            />
-                                        </div>
+                                    <div>
+                                        <label className="block text-xs font-black text-slate-400 uppercase tracking-widest mb-2">教室</label>
+                                        <input
+                                            type="text"
+                                            value={classForm.room}
+                                            onChange={(e) => setClassForm({ ...classForm, room: e.target.value })}
+                                            className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-4 focus:ring-indigo-100 focus:border-indigo-500 outline-none transition-all text-sm font-medium"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-xs font-black text-slate-400 uppercase tracking-widest mb-2">担当教員</label>
+                                        <input
+                                            type="text"
+                                            value={classForm.teacher}
+                                            onChange={(e) => setClassForm({ ...classForm, teacher: e.target.value })}
+                                            className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-4 focus:ring-indigo-100 focus:border-indigo-500 outline-none transition-all text-sm font-medium"
+                                        />
                                     </div>
                                 </div>
-                                <div className="p-8 bg-slate-50/50 flex items-center justify-between gap-4">
-                                    {timetable[selectedCell.key] ? (
-                                        <button onClick={deleteClass} className="text-xs font-black text-red-400 hover:text-red-600 uppercase tracking-widest flex items-center gap-1.5 transition-colors">
-                                            <Trash2 className="w-4 h-4" /> Remove
-                                        </button>
-                                    ) : <div />}
-                                    <div className="flex gap-3">
-                                        <button onClick={() => setIsClassModalOpen(false)} className="px-6 py-2.5 rounded-2xl text-sm font-bold text-slate-500 hover:bg-slate-200/50 transition-all">
-                                            Cancel
-                                        </button>
-                                        <button onClick={saveClass} className="px-8 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-2xl text-sm font-bold shadow-lg shadow-indigo-200 transition-all active:scale-95">
-                                            Save
-                                        </button>
-                                    </div>
+                                <div className="p-6 bg-slate-50 border-t border-slate-100 flex items-center justify-end gap-3">
+                                    <button onClick={deleteClass} className="px-4 py-2.5 rounded-xl text-sm font-bold text-red-600 hover:bg-red-50 transition-colors">
+                                        削除
+                                    </button>
+                                    <button onClick={saveClass} className="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-sm font-bold shadow-md shadow-indigo-100 transition-colors">
+                                        保存
+                                    </button>
                                 </div>
                             </div>
                         </div>
